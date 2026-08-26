@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="de" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yazan Metan | Software & Game Developer</title>
+
+    <!-- fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- styles -->
+    <link rel="stylesheet" href="css/tailwind-output.css">
+    <link rel="stylesheet" href="css/style.css">
+
+    <!-- 3d model viewer -->
+    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
+</head>
+
+<body class="antialiased text-slate-100 bg-slate-950 font-sans selection:bg-sky-500 selection:text-white overflow-x-hidden">
+
+    <!-- navbar -->
+    <header class="bg-slate-950/80 backdrop-blur-xl fixed top-0 left-0 right-0 z-50 border-b border-slate-800/60 transition-all">
+        <nav class="container mx-auto px-4 sm:px-6 h-16 sm:h-20 flex justify-between items-center">
+            <a href="#" class="font-mono text-lg sm:text-xl font-bold tracking-wider text-white hover:text-sky-400 transition-colors">
+                YAZAN<span class="text-sky-400">.</span>DEV
+            </a>
+
+            <!-- desktop nav -->
+            <ul class="hidden md:flex items-center space-x-8 lg:space-x-10 text-sm font-medium">
+                <li><a href="#about" class="nav-link text-slate-300 hover:text-white">Über mich</a></li>
+                <li><a href="#projects" class="nav-link text-slate-300 hover:text-white">Projekte</a></li>
+                <li><a href="#contact" class="nav-link text-slate-300 hover:text-white">Kontakt</a></li>
+                <li>
+                    <button id="terminal-toggle-btn" class="border border-slate-700/80 hover:border-sky-500/50 bg-slate-900/80 hover:bg-slate-800 text-sky-400 px-3.5 py-1.5 rounded-lg text-xs font-mono flex items-center gap-2 transition-all">
+                        <span class="w-2 h-2 rounded-full bg-sky-400 animate-pulse"></span>
+                        TERMINAL
+                    </button>
+                </li>
+            </ul>
+
+            <!-- mobile nav toggle -->
+            <div class="flex items-center gap-2 sm:gap-3 md:hidden">
+                <button id="terminal-toggle-btn-mobile" class="border border-slate-700 bg-slate-900 text-sky-400 px-2.5 py-1.5 rounded text-xs font-mono">
+                    &gt;_
+                </button>
+                <button id="mobile-menu-btn" class="p-2 text-slate-400 hover:text-white focus:outline-none" aria-label="Menü öffnen">
+                    <svg id="menu-open-icon" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                    <svg id="menu-close-icon" class="hidden h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+        </nav>
+
+        <!-- mobile dropdown -->
+        <div id="mobile-menu" class="absolute top-full left-0 w-full bg-slate-950/95 border-b border-slate-800/80 backdrop-blur-2xl transform -translate-y-full opacity-0 pointer-events-none transition-all duration-300 md:hidden">
+            <ul class="flex flex-col items-center space-y-5 py-6 font-medium">
+                <li><a href="#about" class="mobile-nav-link text-lg text-slate-300 hover:text-sky-400">Über mich</a></li>
+                <li><a href="#projects" class="mobile-nav-link text-lg text-slate-300 hover:text-sky-400">Projekte</a></li>
+                <li><a href="#contact" class="mobile-nav-link text-lg text-slate-300 hover:text-sky-400">Kontakt</a></li>
+            </ul>
+        </div>
+    </header>
+
+    <!-- terminal popup -->
+    <div id="terminal-drawer" class="fixed top-20 sm:top-24 right-3 left-3 md:left-auto md:w-[520px] z-40 bg-slate-900/95 border border-slate-700/60 rounded-xl shadow-2xl backdrop-blur-xl transition-all duration-300 transform -translate-y-[150%] opacity-0 hidden">
+        <div class="flex justify-between items-center px-4 py-2.5 bg-slate-950/80 border-b border-slate-800 rounded-t-xl font-mono text-xs text-slate-400">
+            <div class="flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span>
+                <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                <span class="ml-2 text-slate-400 font-medium">yazan@system:~</span>
+            </div>
+            <button id="terminal-close-btn" class="hover:text-white text-base px-1 transition-colors">&times;</button>
+        </div>
+        <div class="p-4 font-mono text-xs h-60 sm:h-64 overflow-y-auto flex flex-col justify-between leading-relaxed" id="terminal-body">
+            <div id="terminal-output" class="space-y-1.5 text-slate-300">
+                <p class="text-sky-400">Yazan Metan Developer Shell [Version 2.0.0]</p>
+                <p class="text-slate-400">Tippe <span class="text-amber-400 font-bold">'help'</span> für verfügbare Befehle.</p>
+            </div>
+            <div class="flex items-center gap-2 mt-4 text-sky-400">
+                <span>$</span>
+                <input type="text" id="terminal-input" class="bg-transparent border-none outline-none text-white w-full font-mono text-xs" placeholder="Befehl eingeben..." autofocus>
+            </div>
+        </div>
+    </div>
+
+    <!-- hero -->
+    <section id="hero" class="min-h-[90vh] sm:min-h-screen flex items-center justify-center relative overflow-hidden pt-24 pb-12 sm:pt-20">
+        <div class="content-wrapper container mx-auto px-4 sm:px-6 text-center max-w-4xl">
+            <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-sky-500/20 bg-sky-500/5 text-sky-400 text-xs font-mono font-medium mb-6 sm:mb-8">
+                SOFTWARE- & GAME-DEVELOPER
+            </div>
+            <h1 class="text-4xl sm:text-7xl md:text-8xl font-extrabold tracking-tight mb-4 sm:mb-6 text-white">
+                Yazan Metan
+            </h1>
+
+            <p class="hero-typed-text text-base sm:text-2xl text-slate-400 font-light mb-8 sm:mb-12 max-w-2xl mx-auto leading-relaxed min-h-[3.5rem] flex flex-col sm:flex-row items-center justify-center">
+                <span>Ich entwickle&nbsp;</span>
+                <span class="typed-wrapper text-white font-semibold">
+                    <span class="typed-text"></span>
+                </span>
+            </p>
+
+            <div class="flex flex-col sm:flex-row gap-3.5 sm:gap-4 justify-center items-center max-w-md mx-auto sm:max-w-none">
+                <a href="#projects" class="w-full sm:w-auto bg-white text-slate-950 font-semibold px-8 py-3.5 rounded-lg hover:bg-slate-200 transition-all text-sm tracking-wide shadow-lg shadow-white/5 text-center">
+                    Projekte ansehen
+                </a>
+                <a href="#contact" class="w-full sm:w-auto border border-slate-700/80 hover:border-slate-500 bg-slate-900/50 text-slate-300 hover:text-white font-semibold px-8 py-3.5 rounded-lg transition-all text-sm tracking-wide text-center">
+                    Kontakt aufnehmen
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- main content -->
+    <main class="content-wrapper container mx-auto px-4 sm:px-6">
+
+        <!-- about -->
+        <section id="about" class="py-20 sm:py-32 border-t border-slate-900">
+            <div class="max-w-5xl mx-auto">
+                <p class="text-xs font-mono text-sky-400 tracking-widest uppercase mb-3">01. Profil</p>
+                <h2 class="text-2xl sm:text-4xl font-bold mb-10 sm:mb-16 text-white">Über mich</h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-8 sm:gap-12 items-center">
+                    <div class="md:col-span-5 flex justify-center">
+                        <div class="relative group">
+                            <div class="absolute -inset-1 bg-gradient-to-r from-sky-500 to-indigo-500 rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-500"></div>
+                            <model-viewer 
+                                id="avatarViewer"
+                                src="assets/avatar.glb" 
+                                alt="Yazan Metan 3D Avatar"
+                                loading="eager"
+                                disable-zoom
+                                disable-pan
+                                camera-orbit="0deg 75deg 55%"
+                                min-camera-orbit="-45deg 60deg 55%"
+                                max-camera-orbit="45deg 90deg 55%"
+                                camera-target="0m 0.3m 0m"
+                                shadow-intensity="1"
+                                exposure="0.9"
+                                interaction-prompt="none"
+                                class="relative rounded-2xl w-56 h-56 sm:w-72 sm:h-72 md:w-80 md:h-80 border border-slate-800/80 bg-slate-900/50">
+                            </model-viewer>
+                        </div>
+                    </div>
+                    <div class="md:col-span-7">
+                        <p class="text-slate-300 leading-relaxed text-sm sm:text-base md:text-lg mb-6 sm:mb-8 font-light">
+                            Hi, ich bin Yazan und entwickle aus Leidenschaft Software und Games. Ich probiere gerne neue Ideen aus, egal ob bei Cartoon Games oder praktischen Apps. Dabei tüftle ich gerne an Lösungen und freue mich, wenn am Ende alles sauber und flüssig läuft.
+                        <br>
+                        <br>
+                        Durch meine Ausbildung am bib International College, meine Erfahrung in der Spieleentwicklung und eigene veröffentlichte Projekte konnte ich verschiedene Bereiche der Entwicklung kennenlernen. Ich habe dabei sowohl im Team als auch selbstständig gearbeitet und eigene Projekte von der ersten Idee bis zur Veröffentlichung begleitet.
+                        </p>
+                        <h3 class="text-xs font-mono text-slate-400 uppercase tracking-widest mb-4">Tech Stack</h3>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="skill-tag">C#</span>
+                            <span class="skill-tag">C++</span>
+                            <span class="skill-tag">Unity</span>
+                            <span class="skill-tag">Unreal Engine 5</span>
+                            <span class="skill-tag">Flutter</span>
+                            <span class="skill-tag">Dart</span>
+                            <span class="skill-tag">Kotlin</span>
+                            <span class="skill-tag">JavaScript</span>
+                            <span class="skill-tag">SQL</span>
+                            <span class="skill-tag">Firebase</span>
+                            <span class="skill-tag">Supabase</span>
+                            <span class="skill-tag">Git</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- projects -->
+        <section id="projects" class="py-20 sm:py-32 border-t border-slate-900">
+            <div class="max-w-6xl mx-auto">
+                <p class="text-xs font-mono text-sky-400 tracking-widest uppercase mb-3">02. Portfolio</p>
+                <h2 class="text-2xl sm:text-4xl font-bold mb-3 text-white">Meine Projekte</h2>
+                <p class="text-slate-400 max-w-xl mb-12 sm:mb-20 text-xs sm:text-sm">Klicke auf eine Karte, um Demos, genutzte Technologien und Details zu sehen.</p>
+
+                <!-- category 1: games -->
+                <div class="mb-16 sm:mb-24">
+                    <div class="flex items-center gap-4 mb-6 sm:mb-8">
+                        <span class="text-xs font-mono text-sky-400 uppercase tracking-widest">Category 01 //</span>
+                        <h3 class="text-base sm:text-lg font-semibold text-white">Veröffentlichte Spiele</h3>
+                        <div class="h-px bg-slate-800 flex-1"></div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6 md:gap-8 items-center">
+                        
+                        <!-- Dunk IT -->
+                        <div class="lg:col-span-8">
+                            <div class="project-trigger card-landscape" 
+                                data-title="Dunk IT" 
+                                data-aspect="landscape"
+                                data-video-src="videos/landscape/dunkIt.mp4"
+                                data-description= "Ein schnelles Local-Multiplayer-Basketballspiel für AirConsole. Die wahre Schwierigkeit war das Verwalten mehrerer Spieler, die jederzeit beitreten können, sowie die Handhabung des AirConsole-SDKs."
+                                data-tech="Unity, C#, AirConsole SDK"
+                                data-link-href="https://www.airconsole.com/#!play=com.iconicparadise.dunkit"
+                                data-link-text="Auf AirConsole spielen">
+                                <video class="w-full h-full object-cover pointer-events-none opacity-0 transition-opacity duration-700" loop muted playsinline preload="none">
+                                    <source data-src="videos/landscape/dunkIt.mp4" type="video/mp4">
+                                </video>
+                                <div class="project-overlay">
+                                    <h4 class="text-base sm:text-xl font-bold text-white">Dunk IT</h4>
+                                    <p class="text-xs text-slate-400 mt-0.5 sm:mt-1">AirConsole Party Game</p>
+                                    <span class="badge mt-2">25.000+ Spieler</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Toilet Swipe -->
+                        <div class="lg:col-span-4 flex justify-center w-full">
+                            <div class="project-trigger card-portrait" 
+                                data-title="Toilet Swipe" 
+                                data-aspect="portrait"
+                                data-video-src="videos/portrait/toiletSwipe.mp4"
+                                data-description="Ein kleineres Arcade-Game mit cartoonartigem Look, das ich im Play Store veröffentlicht habe. Hier konnte ich den kompletten Prozess von der ersten Code-Zeile bis hin zur Veröffentlichung über die Google Play Console durchlaufen."
+                                data-tech="Unity, C#, Android SDK, Google Play Console"
+                                data-link-href="https://play.google.com/store/apps/details?id=com.IconicParadise.ToiletSwipe"
+                                data-link-text="Im Google Play Store ansehen">
+                                <video class="w-full h-full object-cover pointer-events-none opacity-0 transition-opacity duration-700" loop muted playsinline preload="none">
+                                    <source data-src="videos/portrait/toiletSwipe.mp4" type="video/mp4">
+                                </video>
+                                <div class="project-overlay">
+                                    <h4 class="text-base sm:text-xl font-bold text-white">Toilet Swipe</h4>
+                                    <p class="text-xs text-slate-400 mt-0.5 sm:mt-1">Mobile Arcade Game</p>
+                                    <span class="badge mt-2">5.000+ Downloads</span>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- category 2: apps -->
+                <div class="mb-16 sm:mb-24">
+                    <div class="flex items-center gap-4 mb-6 sm:mb-8">
+                        <span class="text-xs font-mono text-indigo-400 uppercase tracking-widest">Category 02 //</span>
+                        <h3 class="text-base sm:text-lg font-semibold text-white">Apps & Software</h3>
+                        <div class="h-px bg-slate-800 flex-1"></div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8 items-stretch">
+                        <!-- Brotein -->
+                        <div class="project-trigger card-portrait" 
+                            data-title="Brotein" 
+                            data-aspect="portrait"
+                            data-video-src="videos/portrait/brotein/features/split_tracker_ai.mp4"
+                            data-description="Da ich selbst viel trainiere, habe ich Brotein als privates Projekt gestartet: eine Android-App für Workout- und Ernährungstracking, die genau das kann, was mir bei anderen Apps gefehlt hat. Inzwischen mit KI-Unterstützung und eigener Cloudflare-Datenbank."
+                            data-tech="Kotlin, Jetpack Compose, Firebase, Supabase, Cloudflare Workers, Gemini AI, Health Connect"
+                            data-features='[
+                                {
+                                    "id": "workout_tracker",
+                                    "title": "Smart Split Tracker & Gemini AI Assistant",
+                                    "badge": "Core Engine",
+                                    "clip": "videos/portrait/brotein/features/split_tracker_ai.mp4",
+                                    "desc": "Split-basiertes Tracking mit übersichtlichen Satz- und Gewichts-Karten. Der integrierte Gemini AI Assistent greift auf die Trainingshistorie der letzten Monate zu, um sinnvolle Tipps für das nächste Training zu geben."
+                                },
+                                {
+                                    "id": "analytics_leaderboard",
+                                    "title": "Post-Workout Analytics & Gym Live-Status",
+                                    "badge": "Analytics",
+                                    "clip": "videos/portrait/brotein/features/post_workout_leaderboard.mp4",
+                                    "desc": "Auswertungen direkt nach dem Training (Volumen, geschätztes 1RM) sowie ein praktischer Live-Status für das FitX-Studio, damit man weiß, wie voll es gerade ist."
+                                },
+                                {
+                                    "id": "nutrition_cloudflare",
+                                    "title": "Nutrition Engine, Health Sync & Cloudflare Search",
+                                    "badge": "High Performance",
+                                    "clip": "videos/portrait/brotein/features/nutrition_engine.mp4",
+                                    "desc": "Eine eigene, gefilterte Produktdatenbank über Cloudflare Workers für superschnelle Suchanfragen. Inklusive Health Connect Synchronisation für Schritte und Kalorien."
+                                },
+                                {
+                                    "id": "progress_tracking",
+                                    "title": "Progress Tracking & Long-term Analytics",
+                                    "badge": "Analytics & AI",
+                                    "clip": "videos/portrait/brotein/features/progress_tracking.mp4",
+                                    "desc": "Langzeit-Analysen mit flexiblen Muskelgruppen-Filtern und übersichtlichen Graphen, um die eigenen Fortschritte über Wochen und Monate hinweg zu verfolgen."
+                                }
+                            ]'>
+                            <video class="w-full h-full object-cover pointer-events-none opacity-0 transition-opacity duration-700" loop muted playsinline preload="none">
+                                <source data-src="videos/portrait/brotein/features/split_tracker_ai.mp4" type="video/mp4">
+                            </video>
+                            <div class="project-overlay">
+                                <h4 class="text-base sm:text-xl font-bold text-white">Brotein</h4>
+                                <p class="text-xs text-slate-400 mt-0.5 sm:mt-1">AI-Powered Workout & Nutrition System</p>
+                                <span class="badge mt-2">Native Android App</span>
+                            </div>
+                        </div>
+
+                        <!-- Brotune -->
+                        <div class="project-trigger card-portrait" 
+                            data-title="Brotune" 
+                            data-aspect="portrait"
+                            data-video-src="videos/portrait/brotune/features/exoplayer.mp4"
+                            data-description="Ein Musikplayer, den ich ebenfalls für das Training entwickelt habe. Er erlaubt nicht nur das Anpassen von Audio-Werten (Pitch/Speed), sondern enthält auch einen P2P-Modus, um mit Trainingspartnern zusammen Musik zu hören."
+                            data-tech="Flutter, Dart, ExoPlayer, Supabase, WebRTC, P2P Nearby"
+                            data-features='[
+                                {
+                                    "id": "exoplayer",
+                                    "title": "ExoPlayer & DSP Control",
+                                    "badge": "Audio Engine",
+                                    "clip": "videos/portrait/brotune/features/exoplayer.mp4",
+                                    "desc": "Direkte ExoPlayer-Integration für flüssiges Tempo- und Pitch-Changing sowie sanfte Übergänge beim Pausieren und Skippen von Tracks."
+                                },
+                                {
+                                    "id": "delayed_start",
+                                    "title": "Delayed Start (Gym Mode)",
+                                    "badge": "Smart Utility",
+                                    "clip": "videos/portrait/brotune/features/delayed_start.mp4",
+                                    "desc": "Startet die Musik erst nach einem kleinen Countdown. Der Timer ist sinnvoll, wenn man Zughilfen dran binden möchte"
+                                },
+                                {
+                                    "id": "listen_together",
+                                    "title": "Listen Together & VoIP Auto-Duck",
+                                    "badge": "Realtime P2P",
+                                    "clip": "videos/portrait/brotune/features/listen_together.mp4",
+                                    "desc": "Ermöglicht gemeinsames Hören über das Internet oder lokal per P2P. Ein eingebauter Voice-Chat regelt die Musik automatisch leiser, sobald jemand spricht."
+                                },
+                                {
+                                    "id": "cloud_sync",
+                                    "title": "Shared Gym Playlist & Cloud Storage",
+                                    "badge": "Backend",
+                                    "clip": "videos/portrait/brotune/features/playlist.mp4",
+                                    "desc": "Gemeinsame Playlists über Supabase Storage, damit alle verbundenen Geräte denselben Song-Stream in Echtzeit empfangen."
+                                }
+                            ]'>
+                            <video class="w-full h-full object-cover pointer-events-none opacity-0 transition-opacity duration-700" loop muted playsinline preload="none">
+                                <source data-src="videos/portrait/brotune/features/exoplayer.mp4" type="video/mp4">
+                            </video>
+                            <div class="project-overlay">
+                                <h4 class="text-base sm:text-xl font-bold text-white">Brotune</h4>
+                                <p class="text-xs text-slate-400 mt-0.5 sm:mt-1">Shared Audio Player & P2P Sync</p>
+                                <span class="badge mt-2">Audio & Realtime Engine</span>
+                            </div>
+                        </div>
+
+                        <!-- OneRing -->
+                        <div class="project-trigger card-portrait" 
+                            data-title="OneRing" 
+                            data-aspect="portrait"
+                            data-video-src="videos/portrait/onering/features/nfc_pairing.mp4"
+                            data-description="Eine Flutter-App zur Verwaltung intelligenter NFC-Ringe. Sie verknüpft Hardware-NFC-Chips mit einer Firebase-Datenbank, wodurch man flexibel zwischen verschiedenen Profilen (wie Business oder Notfall) umschalten kann."
+                            data-tech="Flutter, Dart, Firebase Firestore, NFC Hardware API, Responsive Web"
+                            data-features='[
+                                {
+                                    "id": "nfc_pairing",
+                                    "title": "NFC Hardware Validation & Pairing",
+                                    "badge": "Hardware & Security",
+                                    "clip": "videos/portrait/onering/features/nfc_pairing.mp4",
+                                    "desc": "Sicheres Einlesen und Verknüpfen von NFC-Ring-Seriennummern direkt mit dem Firestore-Backend."
+                                },
+                                {
+                                    "id": "profile_management",
+                                    "title": "Multi-Profile Engine (Business, Social, SOS)",
+                                    "badge": "Core Feature",
+                                    "clip": "videos/portrait/onering/features/profile_management.mp4",
+                                    "desc": "Verwaltet mehrere Modi gleichzeitig, sodass man je nach Situation andere Kontaktdaten oder Links teilen kann."
+                                },
+                                {
+                                    "id": "dynamic_web_rendering",
+                                    "title": "Dynamic Live Profile Web Pages",
+                                    "badge": "Web Engine",
+                                    "clip": "videos/portrait/onering/features/dynamic_web_rendering.mp4",
+                                    "desc": "Generiert beim Scannen des Rings in Echtzeit eine passende, mobile Landingpage aus den aktuellen Backend-Daten."
+                                },
+                                {
+                                    "id": "sos_emergency",
+                                    "title": "Instant Data Exchange & SOS System",
+                                    "badge": "Emergency & Social",
+                                    "clip": "videos/portrait/onering/features/sos_emergency.mp4",
+                                    "desc": "Ermöglicht den schnellen Informationsaustausch – im Notfall auch mit wichtigen medizinischen Hinweisen."
+                                }
+                            ]'>
+                            <video class="w-full h-full object-cover pointer-events-none opacity-0 transition-opacity duration-700" loop muted playsinline preload="none">
+                                <source data-src="videos/portrait/onell_video.mp4" type="video/mp4">
+                            </video>
+                            <div class="project-overlay">
+                                <h4 class="text-base sm:text-xl font-bold text-white">OneRing</h4>
+                                <p class="text-xs text-slate-400 mt-0.5 sm:mt-1">NFC Hardware & Profile Management</p>
+                                <span class="badge mt-2">Flutter & NFC Tech</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- category 3: demos & misc -->
+                <div>
+                    <div class="flex items-center gap-4 mb-6 sm:mb-8">
+                        <span class="text-xs font-mono text-emerald-400 uppercase tracking-widest">Category 03 //</span>
+                        <h3 class="text-base sm:text-lg font-semibold text-white">Demos & Utilities</h3>
+                        <div class="h-px bg-slate-800 flex-1"></div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 md:gap-8">
+                        <!-- Grab IT -->
+                        <div class="project-trigger card-landscape" 
+                            data-title="Grab IT" 
+                            data-aspect="landscape"
+                            data-video-src="videos/landscape/grabit.mp4"
+                            data-description="Ein kleines, praktisches Desktop-Tool in C#, das ich mir gebaut habe, um Dateien im Alltag schneller per Drag-and-Drop zu verwalten."
+                            data-tech="C#, WPF, .NET"
+                            data-link-href="#" 
+                            data-link-text="Details ansehen">
+                            <video class="w-full h-full object-cover pointer-events-none opacity-0 transition-opacity duration-700" loop muted playsinline preload="none">
+                                <source data-src="videos/landscape/grabit.mp4" type="video/mp4">
+                            </video>
+                            <div class="project-overlay">
+                                <h4 class="text-base sm:text-xl font-bold text-white">Grab IT</h4>
+                                <p class="text-xs text-slate-400 mt-0.5 sm:mt-1">File Management Utility</p>
+                                <span class="badge mt-2">Desktop Tool</span>
+                            </div>
+                        </div>
+
+                        <!-- Backrooms -->
+                        <div class="project-trigger card-landscape" 
+                            data-title="Backrooms" 
+                            data-aspect="landscape"
+                            data-video-src="videos/landscape/backrooms.mp4"
+                            data-description="Eine grafische Spielerei in der Unreal Engine 5, um mich intensiver mit Beleuchtung (Lumen), Shadern und realistischer Atmosphäre auseinanderzusetzen."
+                            data-tech="Unreal Engine 5, Blueprints, Environment Art"
+                            data-link-href="#" 
+                            data-link-text="Details ansehen">
+                            <video class="w-full h-full object-cover pointer-events-none opacity-0 transition-opacity duration-700" loop muted playsinline preload="none">
+                                <source data-src="videos/landscape/backrooms.mp4" type="video/mp4">
+                            </video>
+                            <div class="project-overlay">
+                                <h4 class="text-base sm:text-xl font-bold text-white">Backrooms</h4>
+                                <p class="text-xs text-slate-400 mt-0.5 sm:mt-1">Lighting & Environment Tech Demo</p>
+                                <span class="badge mt-2">UE5 Experiment</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- contact -->
+        <section id="contact" class="py-20 sm:py-32 border-t border-slate-900 text-center">
+            <div class="max-w-xl mx-auto">
+                <p class="text-xs font-mono text-sky-400 tracking-widest uppercase mb-3">03. Kontakt</p>
+                <h2 class="text-2xl sm:text-4xl font-bold mb-4 sm:mb-6 text-white">Kontakt aufnehmen</h2>
+                <p class="text-slate-400 mb-8 sm:mb-10 text-xs sm:text-sm leading-relaxed px-4">
+                    Du hast ein spannendes Projekt, suchst Unterstützung für dein Team oder möchtest dich einfach mal austauschen? Schreib mir gerne direkt eine E-Mail!
+                </p>
+                
+                <a href="mailto:yazan.metan05@gmail.com"
+                    class="inline-block bg-sky-500 hover:bg-sky-400 text-slate-950 font-bold text-xs sm:text-sm px-8 py-4 rounded-lg transition-all shadow-lg shadow-sky-500/10">
+                    E-Mail Schreiben
+                </a>
+
+                <div class="mt-12 sm:mt-16 flex justify-center space-x-6">
+                    <a href="https://github.com/YazanMetanx" target="_blank" rel="noopener" class="text-slate-500 hover:text-white transition-colors" aria-label="GitHub">
+                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M12 2C6.477 2 2 6.477 2 12.013c0 4.418 2.865 8.167 6.839 9.49.5.092.682-.217.682-.482 0-.237-.009-.868-.014-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.031-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.203 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.338 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.001 10.001 0 0022 12.013C22 6.477 17.523 2 12 2z" clip-rule="evenodd" /></svg>
+                    </a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- footer -->
+    <footer class="py-6 sm:py-8 border-t border-slate-900 text-center text-[10px] sm:text-xs text-slate-600 font-mono">
+        <p>&copy; <span id="year"></span> YAZAN METAN — HANDCRAFTED WITH TAILWIND & JS</p>
+    </footer>
+
+    <!-- project details modal -->
+    <div id="project-modal" class="fixed inset-0 bg-slate-950/85 backdrop-blur-xl flex items-center justify-center p-3 sm:p-6 md:p-8 z-[100] hidden">
+        <div id="modal-card" class="relative bg-slate-900 border border-slate-800/80 rounded-2xl w-full max-w-5xl max-h-[88vh] sm:max-h-[90vh] flex flex-col md:flex-row overflow-hidden shadow-2xl">
+            <button id="modal-close-btn" class="absolute top-3 right-3 sm:top-4 sm:right-4 text-slate-400 hover:text-white bg-slate-950/80 p-2 rounded-full z-30 transition-colors border border-slate-800" aria-label="Schließen">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+
+            <!-- media -->
+            <div id="modal-media-container" class="bg-black/90 flex items-center justify-center p-2 sm:p-4 flex-shrink-0 relative"></div>
+
+            <!-- info -->
+            <div class="overflow-y-auto p-4 sm:p-6 md:p-10 flex flex-col justify-between w-full bg-slate-900/50">
+                <div>
+                    <h3 id="modal-title" class="text-xl sm:text-2xl md:text-3xl font-bold mb-2 sm:mb-3 text-white pr-8"></h3>
+                    <p id="modal-description" class="text-slate-300 mb-6 sm:mb-8 leading-relaxed text-xs sm:text-sm md:text-base font-light"></p>
+                    <h4 class="text-[10px] sm:text-xs font-mono text-slate-500 uppercase tracking-widest mb-3">Tech Stack</h4>
+                    <div id="modal-tech-container" class="flex flex-wrap gap-1.5 sm:gap-2 mb-6 sm:mb-8"></div>
+                    <div id="modal-extra-content" class="mt-4 sm:mt-6"></div>
+                </div>
+                <div id="modal-link-wrapper" class="mt-6 sm:mt-8 pt-4 border-t border-slate-800/60 md:border-t-0 hidden">
+                    <a id="modal-link" href="#" target="_blank" rel="noopener noreferrer" class="inline-block w-full sm:w-auto text-center bg-sky-500 hover:bg-sky-400 text-slate-950 font-bold text-xs md:text-sm px-6 py-3 rounded-lg transition-colors"></a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- vendor scripts -->
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <script src="https://unpkg.com/typed.js@2.0.16/dist/typed.umd.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>

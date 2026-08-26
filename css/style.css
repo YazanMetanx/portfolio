@@ -1,0 +1,225 @@
+body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background-color: #020617;
+}
+
+.font-mono {
+    font-family: 'JetBrains Mono', monospace;
+}
+
+/* bg grid overlay */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                      linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.content-wrapper {
+    position: relative;
+    z-index: 1;
+}
+
+/* typed.js fix */
+.typed-wrapper {
+    display: inline; 
+    max-width: 100%; 
+} 
+
+.typed-text {
+    overflow-wrap: break-word; 
+}
+
+/* nav hover effect */
+.nav-link {
+    position: relative;
+    transition: color 0.2s;
+}
+
+.nav-link::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 1px;
+    bottom: -4px;
+    left: 0;
+    background-color: #38bdf8;
+    transition: width 0.2s ease;
+}
+
+.nav-link:hover::after {
+    width: 100%;
+}
+
+/* tags & badges */
+.skill-tag {
+    background-color: rgba(15, 23, 42, 0.8);
+    color: #94a3b8;
+    padding: 0.35rem 0.75rem;
+    border-radius: 0.5rem;
+    font-size: 0.75rem;
+    font-family: 'JetBrains Mono', monospace;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.skill-tag:hover {
+    border-color: rgba(56, 189, 248, 0.4);
+    color: #38bdf8;
+    transform: translateY(-1px);
+}
+
+.badge {
+    display: inline-block;
+    padding: 0.2rem 0.5rem;
+    border-radius: 0.375rem;
+    font-size: 0.65rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 600;
+    background-color: rgba(56, 189, 248, 0.1);
+    color: #38bdf8;
+    border: 1px solid rgba(56, 189, 248, 0.2);
+    width: fit-content;
+}
+
+/* project cards */
+.project-trigger {
+    position: relative;
+    border-radius: 0.75rem;
+    overflow: hidden;
+    cursor: pointer;
+    background-color: #0f172a;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease, box-shadow 0.3s ease;
+    width: 100%;
+}
+
+.project-trigger:hover {
+    transform: translateY(-4px);
+    border-color: rgba(56, 189, 248, 0.4);
+    box-shadow: 0 12px 32px -8px rgba(56, 189, 248, 0.18);
+}
+
+@media (max-width: 639px) {
+    .card-portrait,
+    .card-landscape {
+        display: flex;
+        flex-direction: row;
+        aspect-ratio: auto !important;
+        height: 120px;
+        max-width: 100% !important;
+    }
+
+    .project-trigger video {
+        width: 100px !important;
+        height: 100% !important;
+        object-fit: cover;
+        flex-shrink: 0;
+    }
+
+    .project-overlay {
+        position: relative !important;
+        inset: auto !important;
+        background: transparent !important;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding: 0.75rem 1rem !important;
+        flex: 1;
+        overflow: hidden;
+    }
+
+    .hero-typed-text {
+        flex-direction: column;
+    }
+
+    .typed-wrapper {
+        display: block;
+        max-width: 100%;
+        text-align: center;
+    }
+}
+
+@media (min-width: 640px) {
+    .project-trigger {
+        border-radius: 1rem;
+    }
+
+    .card-landscape {
+        aspect-ratio: 16 / 9;
+    }
+
+    .card-portrait {
+        aspect-ratio: 9 / 16;
+        width: 100%;
+        max-width: 320px;
+        margin-left: auto;
+        margin-right: 0;
+    }
+
+    .project-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(to top, rgba(2, 6, 23, 0.95), rgba(2, 6, 23, 0.2) 60%, transparent);
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        padding: 1.5rem;
+        transition: background 0.3s ease;
+    }
+
+    .project-trigger:hover .project-overlay {
+        background: linear-gradient(to top, rgba(2, 6, 23, 0.98), rgba(2, 6, 23, 0.4) 70%, transparent);
+    }
+}
+
+/* accordion animation helper */
+.accordion-body {
+    display: grid;
+    transition: grid-template-rows 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease-in-out;
+}
+
+.typed-cursor {
+    display: inline;
+    white-space: nowrap;
+}
+
+.accordion-closed {
+    grid-template-rows: 0fr;
+    opacity: 0;
+}
+
+.accordion-open {
+    grid-template-rows: 1fr;
+    opacity: 1;
+}
+
+/* custom scrollbars */
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+.no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+#terminal-body::-webkit-scrollbar,
+#modal-card::-webkit-scrollbar,
+.overflow-y-auto::-webkit-scrollbar {
+    width: 4px;
+}
+
+#terminal-body::-webkit-scrollbar-thumb,
+#modal-card::-webkit-scrollbar-thumb,
+.overflow-y-auto::-webkit-scrollbar-thumb {
+    background: #334155;
+    border-radius: 2px;
+}
